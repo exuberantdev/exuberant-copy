@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Search</title>
+
+  <link rel="stylesheet" href="/base.css">
+  <link rel="stylesheet" href="/forum-ui.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="title">Search</div>
+  <div class="right">
+    <button class="btn-ghost" onclick="location.href='/forum.html'">Назад</button>
+  </div>
+</header>
+
+<main class="container page-pad">
+  <input class="input" id="q" placeholder="@username" oninput="search()">
+  <div class="list" id="list"></div>
+</main>
+
+<nav class="bottom-nav">
+  <button class="nav-item" onclick="location.href='/forum.html'">Feed</button>
+  <button class="nav-item active">Search</button>
+  <button class="nav-item" onclick="location.href='/create.html'">New</button>
+  <button class="nav-item" onclick="location.href='/settings.html'">Profile</button>
+</nav>
+
+<script>
+async function search(){
+  const term = q.value.replace("@","").trim();
+  if (term.length < 2) return list.innerHTML = "";
+  const r = await fetch(`/api/users?q=${term}`, { credentials:"include" });
+  const j = await r.json();
+  list.innerHTML = j.users.map(u => `
+    <div class="row">
+      <div>
+        <div class="uname">@${u.username}</div>
+        <div class="meta">${u.name||""}</div>
+      </div>
+      <button class="btn-soft" onclick="location.href='/chat.html?u=${u.username}'">Message</button>
+    </div>
+  `).join("");
+}
+</script>
+
+</body>
+</html>

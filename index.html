@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Exuberant</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/base.css">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<main class="auth-wrap">
+  <section class="card auth-card">
+
+    <header class="auth-head">
+      <div class="brand">Exuberant</div>
+      <div class="tabs">
+        <button id="tabReg" class="tab active" onclick="setMode('reg')">Регистрация</button>
+        <button id="tabLogin" class="tab" onclick="setMode('login')">Вход</button>
+      </div>
+    </header>
+
+    <div id="msg" class="msg hidden"></div>
+
+    <!-- REGISTRATION -->
+    <div id="regFlow">
+
+      <div id="regStep1" class="block">
+        <label class="label">Email</label>
+        <input class="input" id="regEmail" autocomplete="email">
+
+        <label class="label">Пароль</label>
+        <input class="input" id="regPassword" type="password" autocomplete="new-password">
+
+        <button class="btn" onclick="regSendCode()">Продолжить</button>
+      </div>
+
+      <div id="regStep2" class="block hidden">
+        <label class="label">Код из письма</label>
+        <input class="input" id="regCode">
+        <button class="btn" onclick="regVerifyCode()">Подтвердить</button>
+      </div>
+
+      <div id="regStep3" class="block hidden">
+        <label class="label">Имя</label>
+        <input class="input" id="regName">
+
+        <label class="label">Username</label>
+        <input class="input" id="regUsername">
+
+        <button class="btn" onclick="regSetup()">Завершить</button>
+      </div>
+
+    </div>
+
+    <!-- LOGIN -->
+    <div id="loginFlow" class="hidden">
+      <label class="label">Email</label>
+      <input class="input" id="loginEmail" autocomplete="email">
+
+      <label class="label">Пароль</label>
+      <input class="input" id="loginPassword" type="password" autocomplete="current-password">
+
+      <button class="btn" onclick="login()">Войти</button>
+
+      <div class="row-links">
+        <a class="link" href="/reset_request.html">Забыл пароль</a>
+      </div>
+    </div>
+
+  </section>
+</main>
+
+<script>
+let REG_EMAIL = "";
+
+function showMsg(t){
+  msg.textContent = t;
+  msg.classList.remove("hidden");
+}
+function hideMsg(){
+  msg.classList.add("hidden");
+  msg.textContent = "";
+}
+
+function setMode(m){
+  tabReg.classList.toggle("active", m==="reg");
+  tabLogin.classList.toggle("active", m==="login");
+  regFlow.classList.toggle("hidden", m!=="reg");
+  loginFlow.classList.toggle("hidden", m!=="login");
+  hideMsg();
+}
+
+async function post(action, data){
+  const r = await fetch(`/api/auth?action=${action}`, {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    credentials:"include",
+    body: JSON.stringify(data)
+  });
+  const j = await r.json().catch(()=>({}));
+  return { status:r.status, json:j };
+}
+
+function mapErr(e){
+  switch(e){
+    case "BAD_EMAIL": return "Неверный email.";
+    case "BAD_PASSWORD": return "Пароль минимум 8 символов.";
+    case "ACCOUNT_EXISTS": return "Аккаунт уже есть. Войди в него.";
+    case "NO_PENDING": return "Код истёк. Запроси новый.";
+    case "INVALID_CODE": return "Неверный код.";
+    case "BAD_NAME": return "Имя некорректное.";
+    case "BAD_USERNAME": return "Username некорректный.";
+    case "USERNAME_TAKEN": return "Username занят.";
+    case "NO_ACCOUNT": return "Аккаунт не найден.";
+    case "BAD_CREDENTIALS": return "Неверный email или пароль.";
+    case "RATE_LIMIT": return "Слишком часто. Попробуй позже.";
+    default: return "Ошибка. Попробуй ещё раз.";
+  }
+}
+
+async function regSendCode(){
+  hideMsg();
+  REG_EMAIL = regEmail.value.trim().toLowerCase();
+
+  const { json } = await post("register_sendCode", {
+    email: REG_EMAIL,
+    password: regPassword.value
+  });
+
+  if (!json.ok) {
+    showMsg(mapErr(json.error));
+    if (json.error === "ACCOUNT_EXISTS") {
+      setMode("login");
+      loginEmail.value = REG_EMAIL;
+    }
+    return;
+  }
+
+  regStep1.classList.add("hidden");
+  regStep2.classList.remove("hidden");
+}
+
+async function regVerifyCode(){
+  hideMsg();
+
+  const { json } = await post("register_verifyCode", {
+    email: REG_EMAIL,
+    code: regCode.value.trim()
+  });
+
+  if (!json.ok) return showMsg(mapErr(json.error));
+
+  regStep2.classList.add("hidden");
+  regStep3.classList.remove("hidden");
+}
+
+async function regSetup(){
+  hideMsg();
+
+  const { json } = await post("register_setup", {
+    email: REG_EMAIL,
+    name: regName.value,
+    username: regUsername.value
+  });
+
+  if (!json.ok) return showMsg(mapErr(json.error));
+
+  location.href = "/forum.html";
+}
+
+async function login(){
+  hideMsg();
+
+  const { json } = await post("login", {
+    email: loginEmail.value.trim().toLowerCase(),
+    password: loginPassword.value
+  });
+
+  if (!json.ok) return showMsg(mapErr(json.error));
+
+  location.href = "/forum.html";
+}
+</script>
+
+</body>
+</html>

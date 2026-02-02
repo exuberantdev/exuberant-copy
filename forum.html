@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Exuberant</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/base.css">
+  <link rel="stylesheet" href="/forum-ui.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="left" onclick="location.href='/settings.html'" style="cursor:pointer">
+    <img id="meAva" class="avatar" alt="">
+    <div class="brand">
+      <div class="title" id="meName">Exuberant</div>
+      <div class="sub" id="meSub">loading…</div>
+    </div>
+  </div>
+  <div class="right">
+    <button class="btn-ghost" onclick="location.href='/search.html'">Search</button>
+    <button class="btn-ghost" onclick="location.href='/settings.html'">Settings</button>
+  </div>
+</header>
+
+<main class="container page-pad">
+  <section class="feed" id="feed"></section>
+  <div id="empty" class="muted small hidden" style="padding:14px; border:1px dashed var(--border2); border-radius: var(--radius); background: rgba(0,0,0,.18);">
+    Пока нет постов.
+  </div>
+</main>
+
+<nav class="bottom-nav">
+  <button class="nav-item active" onclick="location.href='/forum.html'">Feed</button>
+  <button class="nav-item" onclick="location.href='/search.html'">Search</button>
+  <button class="nav-item" onclick="location.href='/create.html'">New</button>
+  <button class="nav-item" onclick="location.href='/settings.html'">Profile</button>
+</nav>
+
+<script>
+function esc(s){return String(s||"").replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+
+function badgeHtml(b){
+  const cls = (b==="premium"||b==="verified"||b==="early") ? b : "";
+  return `<span class="badge ${cls}">${esc(b.toUpperCase())}</span>`;
+}
+
+async function me(){
+  const r = await fetch("/api/profile", { credentials:"include" });
+  if (r.status === 401) location.href="/index.html";
+  return r.json();
+}
+
+async function loadFeed(){
+  const author = new URLSearchParams(location.search).get("author") || "";
+  const r = await fetch(`/api/posts?author=${encodeURIComponent(author)}`, { credentials:"include" });
+  if (r.status === 401) location.href="/index.html";
+  const j = await r.json().catch(()=>({ posts:[] }));
+
+  const posts = j.posts || [];
+  empty.classList.toggle("hidden", posts.length !== 0);
+
+  feed.innerHTML = posts.map(p => `
+    <article class="post-card" onclick="location.href='/post.html?id=${encodeURIComponent(p.id)}'">
+      <div class="post-head">
+        <div class="post-author" onclick="event.stopPropagation(); location.href='/u.html?u=${encodeURIComponent(p.username)}'">
+          <img class="avatar" src="${p.avatar || ""}" style="${p.avatar ? "" : "visibility:hidden"}" alt="">
+          <div class="nameblock">
+            <div class="uname">@${esc(p.username)}</div>
+            <div class="meta">${(p.badges||[]).slice(0,3).map(badgeHtml).join(" ")}</div>
+          </div>
+        </div>
+        <div class="muted small">${new Date(p.createdAt||Date.now()).toLocaleString()}</div>
+      </div>
+
+      <div class="post-title">${esc(p.title)}</div>
+      <div class="post-snippet">${esc(p.snippet || "")}</div>
+    </article>
+  `).join("");
+}
+
+(async ()=>{
+  const u = await me();
+  meName.textContent = u.name || "Exuberant";
+  meSub.textContent = "@"+(u.username||"");
+  if (u.avatar) meAva.src = u.avatar; else meAva.style.visibility = "hidden";
+  await loadFeed();
+})();
+</script>
+
+</body>
+</html>

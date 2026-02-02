@@ -1,0 +1,113 @@
+.container{ padding-bottom: 96px; }
+
+.feed-head{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:12px;
+  margin: 16px 0 14px;
+}
+
+.feed-title{
+  font-size:18px;
+  font-weight:900;
+}
+
+.feed-actions{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.search{
+  width: 260px;
+  padding: 10px 12px;
+}
+
+.feed{
+  display:grid;
+  gap:12px;
+}
+
+.post-card{
+  padding:14px;
+  border-radius: var(--radius);
+  border:1px solid var(--border);
+  background: rgba(18,18,18,.78);
+  cursor:pointer;
+  transition: transform .08s ease, border-color .12s ease, background .12s ease;
+}
+.post-card:hover{
+  transform: translateY(-1px);
+  border-color: rgba(29,185,84,.35);
+  background: rgba(18,18,18,.92);
+}
+
+.post-title{
+  font-weight:900;
+  letter-spacing:.1px;
+  margin-bottom:6px;
+}
+
+.post-meta{
+  color: var(--muted);
+  font-size:12px;
+  margin-bottom:10px;
+}
+
+.post-snippet{
+  color: rgba(234,234,234,.85);
+  font-size:13px;
+  line-height:1.45;
+  max-height: 3.2em;
+  overflow:hidden;
+}
+
+.empty{
+  padding: 18px;
+  border:1px dashed var(--border);
+  border-radius: var(--radius);
+  color: var(--muted);
+  background: rgba(18,18,18,.55);
+}
+
+/* bottom nav */
+.bottom-nav{
+  position:fixed;
+  left:0; right:0; bottom:0;
+  height:72px;
+  padding:10px 10px calc(10px + env(safe-area-inset-bottom));
+  background: rgba(18,18,18,.92);
+  backdrop-filter: var(--blur);
+  border-top:1px solid var(--border);
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+}
+
+.nav-item{
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 900;
+  padding: 10px 14px;
+  border-radius: 14px;
+  cursor:pointer;
+}
+.nav-item.active{ color: var(--text); }
+.nav-item:hover{ opacity:.92; }
+
+@media (min-width: 920px){
+  .bottom-nav{
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 520px;
+    border-radius: 18px 18px 0 0;
+  }
+}
+
+@media (max-width: 520px){
+  .feed-head{flex-direction:column; align-items:stretch}
+  .search{width:100%}
+}

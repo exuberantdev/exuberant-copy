@@ -1,0 +1,164 @@
+/* density: меньше пустоты */
+.feed{ display:grid; gap:10px; }
+
+/* post card */
+.post-card{
+  padding: 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border2);
+  background: rgba(0,0,0,.20);
+  cursor:pointer;
+  transition: transform .08s ease, border-color .12s ease, background .12s ease;
+}
+.post-card:hover{
+  transform: translateY(-1px);
+  border-color: rgba(29,185,84,.30);
+  background: rgba(0,0,0,.28);
+}
+
+.post-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 10px;
+}
+
+.post-author{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+}
+.post-author .nameblock{ min-width:0; }
+.post-author .uname{
+  font-weight: 900;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.post-author .meta{
+  margin-top:2px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.post-title{
+  font-weight: 900;
+  margin: 10px 0 6px;
+  letter-spacing:.1px;
+}
+
+.post-snippet{
+  color: rgba(236,236,236,.86);
+  font-size: 13px;
+  line-height: 1.45;
+  max-height: 3.1em;
+  overflow: hidden;
+}
+
+/* badges “как премиум” */
+.badges{ display:flex; gap:6px; flex-wrap:wrap; }
+.badge{
+  font-size: 10px;
+  font-weight: 900;
+  padding: 3px 7px;
+  border-radius: 999px;
+  border: 1px solid var(--border2);
+  background: rgba(255,255,255,.04);
+  color: rgba(236,236,236,.78);
+  letter-spacing:.2px;
+}
+.badge.premium{ border-color: rgba(29,185,84,.38); color: rgba(29,185,84,.95); background: rgba(29,185,84,.10); }
+.badge.verified{ border-color: rgba(124,92,255,.40); color: rgba(124,92,255,.95); background: rgba(124,92,255,.10); }
+.badge.early{ border-color: rgba(255,210,120,.35); color: rgba(255,210,120,.95); background: rgba(255,210,120,.10); }
+
+/* search list */
+.list{ display:grid; gap:10px; }
+.row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px;
+  border:1px solid var(--border2);
+  border-radius: var(--radius);
+  background: rgba(0,0,0,.20);
+}
+.row:hover{ border-color: rgba(29,185,84,.25); }
+
+.who{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+}
+.who .uname{
+  font-weight: 900;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.who .meta{
+  font-size:12px;
+  color: var(--muted);
+  margin-top:2px;
+}
+.who .nameblock{ min-width:0; }
+
+/* editor */
+.editor{ padding: 14px; }
+.editor-row{ display:flex; gap:10px; margin-top: 8px; }
+.editor-row .btn{ flex: 1; }
+.editor-row .btn-ghost{ width: 150px; }
+
+/* profile */
+.profile-card{ padding: 14px; }
+.profile-top{
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+.profile-top .big-avatar{
+  width: 64px; height: 64px; border-radius: 18px;
+  border: 1px solid var(--border2);
+  background: rgba(255,255,255,.05);
+  object-fit: cover;
+}
+.profile-top .pname{
+  font-weight: 900;
+  font-size: 16px;
+}
+.profile-top .puname{
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 2px;
+}
+.profile-actions{
+  display:flex;
+  gap:10px;
+  margin-top: 12px;
+}
+.profile-actions .btn-soft{ flex: 1; }
+.profile-actions .btn-ghost{ flex: 1; }
+
+/* settings */
+.set-card{ padding: 14px; margin-top: 10px; }
+.preview-avatar{
+  width: 54px; height: 54px; border-radius: 16px;
+  border: 1px solid var(--border2);
+  object-fit: cover;
+  background: rgba(255,255,255,.05);
+}
+.set-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.set-row .grow{ flex:1; min-width:0; }
+
+/* mobile */
+@media (max-width: 520px){
+  .editor-row{ flex-direction:column; }
+  .editor-row .btn-ghost{ width:100%; }
+  .profile-actions{ flex-direction:column; }
+}

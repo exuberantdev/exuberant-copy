@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Settings</title>
+
+  <link rel="stylesheet" href="/base.css">
+  <link rel="stylesheet" href="/forum-ui.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="title">Settings</div>
+  <div class="right">
+    <button class="btn-ghost" onclick="location.href='/forum.html'">Назад</button>
+  </div>
+</header>
+
+<main class="container page-pad">
+  <section class="card set-card">
+    <div class="sec-title">Аватар</div>
+    <input type="file" id="file" class="input" accept="image/*">
+    <button class="btn-soft" onclick="upload()">Загрузить</button>
+  </section>
+</main>
+
+<script>
+async function upload(){
+  const f = file.files[0];
+  if (!f) return alert("Выбери файл");
+  const fd = new FormData();
+  fd.append("file", f);
+  const r = await fetch("/api/avatar",{ method:"POST", credentials:"include", body:fd });
+  const j = await r.json();
+  if (!j.ok) return alert("Ошибка");
+  alert("Готово");
+  location.reload();
+}
+</script>
+
+</body>
+</html>
